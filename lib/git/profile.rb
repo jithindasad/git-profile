@@ -7,9 +7,11 @@ module Utilities
   def user_exists?(email)
     profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
     users = YAML.load(File.read(profiles))
+
     emails = users[:users].filter do |user| 
       user[:email] == email
     end
+    
     emails.empty? ? false : true
   end
 
@@ -27,16 +29,14 @@ module Utilities
 
   def save(username, email)
     profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
-
-    if user_exists?(email)
-      say("User already exists!")
-      exit
-    end
-
     if File.zero?(profiles)
       users = {users: [{username: "#{username}", email: "#{email}"}]}
       File.open(profiles, "w") { |file| file.write(users.to_yaml) }
     else
+      if user_exists?(email)
+        say("User already exists!")
+        exit
+      end
       users = YAML.load(File.read(profiles))
       user = {username: "#{username}", email: "#{email}"}
       users[:users].push(user)
@@ -78,6 +78,11 @@ module Profile
 
       if File.exist?(profiles) && !File.zero?(profiles)
         users = YAML.load(File.read(profiles))
+        if users[:users].empty?
+          File.open(profiles, 'w') {|file| file.truncate(0) } 
+          say("No git profiles found. You can add a git profile with `$git-profile add` command .")
+          exit
+        end 
         users[:users].each_with_index { |user, index| say("#{index + 1}. #{user[:username]} <#{user[:email]}>") }
       else
         say("No git profiles found. You can add a git profile with `$git-profile add` command .")
@@ -91,7 +96,23 @@ module Profile
 
     desc "delete [username]", "Remove a specific git profile"
     def delete(username)
-      # TODO
+      profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
+
+      if File.exist?(profiles) && !File.zero?(profiles)
+        users = YAML.load(File.read(profiles))
+        user = users[:users].filter { |user| user[:username] == username }
+
+        unless user.empty?
+          users[:users].delete(user.first)
+          say("User #{user.first[:username]} <#{user.first[:email].to_s}> has been deleted!")
+ 
+          File.open(profiles, "w") { |file| file.write(users.to_yaml) }
+        else
+          say("No git profiles with username #{username} was found. You can see all available profiles with `$git-profile list` command .")
+        end
+      else
+        say("No git profiles found. You can add a git profile with `$git-profile add` command .")
+      end
     end
 
     desc "reset", "Deletes all data and reset."
