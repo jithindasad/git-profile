@@ -3,6 +3,10 @@ require 'thor'
 
 module Profile
  class CLI < Thor
+  include Thor::Actions
+    def self.exit_on_failure?
+      true
+    end
     desc "add", "Adds a new git profile"
     def add
       # TODO
@@ -30,7 +34,10 @@ module Profile
 
     desc "whoami", "Show the global git profile"
     def whoami
-      # TODO
+      print("username: ")
+      username = run("git config user.name", config = {:verbose => false})
+      print("email: ")
+      email = run("git config user.email", config = {:verbose => false})
     end
  end
 end
