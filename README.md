@@ -23,7 +23,6 @@ Or install it yourself as:
 `$ git-profile <command>`
 
 Commands:
-
 ```
   git-profile add                # Adds a new git profile
   git-profile delete [username]  # Remove a specific git profile
