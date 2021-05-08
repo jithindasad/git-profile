@@ -74,7 +74,14 @@ module Profile
 
     desc "list", "List all available git profiles."
     def list
-      # TODO
+      profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
+
+      if File.exist?(profiles) && !File.zero?(profiles)
+        users = YAML.load(File.read(profiles))
+        users[:users].each_with_index { |user, index| say("#{index + 1}. #{user[:username]} <#{user[:email]}>") }
+      else
+        say("No git profiles found. You can add a git profile with `$git-profile add` command .")
+      end
     end
 
     desc "use [username]", "Set the global git profile."
