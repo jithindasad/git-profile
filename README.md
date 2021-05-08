@@ -1,4 +1,5 @@
 # git-profile
+**Warning 🚧** The tool is under active development, Please backup your gitconfig before trying this out `$ cp ~/.gitconfig ~/.gitconfig.example`
 
 **git-profile** is a CLI tool which allows you to switch between multiple git profiles interactively.
 
