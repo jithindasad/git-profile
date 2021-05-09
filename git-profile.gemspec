@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "thor", "~> 1.1"
   
 
-  spec.metadata["allowed_push_host"] = "http://mygemserver.com"
+  spec.metadata["allowed_push_host"] = "https://mygemserver.com"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
