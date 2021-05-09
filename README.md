@@ -1,5 +1,8 @@
 # git-profile
-**Warning 🚧** The tool is under active development, Please backup your gitconfig before trying this out `$ cp ~/.gitconfig ~/.gitconfig.example`
+**Warning 🚧** The tool was developed for authors personal use, No extensive testing has been done. 
+Make sure you make a backup of your `gitconfig` before doing anything.
+
+ `$ cp ~/.gitconfig ~/.gitconfig.example`
 
 **git-profile** is a CLI tool which allows you to switch between multiple git profiles interactively.
 
@@ -42,7 +45,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/git-profile.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jithindasad/git-profile.
 
 
 ## License
