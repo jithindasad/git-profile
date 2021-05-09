@@ -90,10 +90,14 @@ module Profile
       if File.exist?(profiles) && !File.zero?(profiles)
         users = YAML.load(File.read(profiles))
         user = users[:users].filter { |user| user[:username] == username }
-        File.open(config_path, 'w') {|file| file.truncate(0) } if File.exist?(config_path)
-        run("git config --global user.name #{user.first[:username]}")
-        run("git config --global user.email #{user.first[:email]}")
-        say("git credentials has been updated.")
+        if user
+          File.open(config_path, 'w') {|file| file.truncate(0) } if File.exist?(config_path)
+          run("git config --global user.name #{user.first[:username]}")
+          run("git config --global user.email #{user.first[:email]}")
+          say("git credentials has been updated.")
+        else
+          say("No git profiles with username #{username} was found. See all available profiles with `$git-profile list` command .")
+        end
       else
         say("No git profiles with username #{username} was found. See all available profiles with `$git-profile list` command .")
       end
@@ -125,15 +129,24 @@ module Profile
 
     desc "reset", "Deletes all data and reset."
     def reset
-      # TODO
+      profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
+      config_path = File.join(Dir.home, ".gitconfig")
+      File.open(profiles, 'w') {|file| file.truncate(0) } if File.exist?(profiles) && !File.zero?(profiles)
+      File.open(config_path, 'w') {|file| file.truncate(0) } if File.exist?(config_path)
+      say("reset successfull!")
     end
 
     desc "whoami", "Show the global git profile"
     def whoami
-      print("username: ")
-      username = run("git config user.name", config = {:verbose => false})
-      print("email: ")
-      email = run("git config user.email", config = {:verbose => false})
+      config_path = File.join(Dir.home, ".gitconfig")
+      if File.exist?(config_path) && !File.zero?(config_path)
+        print("username: ")
+        username = run("git config user.name", config = {:verbose => false})
+        print("email: ")
+        email = run("git config user.email", config = {:verbose => false})
+      else
+        say("No git profiles found. You can add a git profile with `$git-profile use` command .")
+      end
     end
  end
 end
