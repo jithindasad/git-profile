@@ -75,14 +75,8 @@ module Profile
     desc "list", "List all available git profiles."
     def list
       profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
-
       if File.exist?(profiles) && !File.zero?(profiles)
         users = YAML.load(File.read(profiles))
-        if users[:users].empty?
-          File.open(profiles, 'w') {|file| file.truncate(0) } 
-          say("No git profiles found. You can add a git profile with `$git-profile add` command .")
-          exit
-        end 
         users[:users].each_with_index { |user, index| say("#{index + 1}. #{user[:username]} <#{user[:email]}>") }
       else
         say("No git profiles found. You can add a git profile with `$git-profile add` command .")
@@ -91,7 +85,18 @@ module Profile
 
     desc "use [username]", "Set the global git profile."
     def use(username)
-      # TODO
+      profiles = File.join(Dir.home, "/.git-profile/profiles.yml")
+      config_path = File.join(Dir.home, ".gitconfig")
+      if File.exist?(profiles) && !File.zero?(profiles)
+        users = YAML.load(File.read(profiles))
+        user = users[:users].filter { |user| user[:username] == username }
+        File.open(config_path, 'w') {|file| file.truncate(0) } if File.exist?(config_path)
+        run("git config --global user.name #{user.first[:username]}")
+        run("git config --global user.email #{user.first[:email]}")
+        say("git credentials has been updated.")
+      else
+        say("No git profiles with username #{username} was found. See all available profiles with `$git-profile list` command .")
+      end
     end
 
     desc "delete [username]", "Remove a specific git profile"
@@ -105,8 +110,11 @@ module Profile
         unless user.empty?
           users[:users].delete(user.first)
           say("User #{user.first[:username]} <#{user.first[:email].to_s}> has been deleted!")
- 
-          File.open(profiles, "w") { |file| file.write(users.to_yaml) }
+          if users[:users].empty?
+            File.open(profiles, 'w') {|file| file.truncate(0) } 
+          else
+            File.open(profiles, "w") { |file| file.write(users.to_yaml) }
+          end
         else
           say("No git profiles with username #{username} was found. You can see all available profiles with `$git-profile list` command .")
         end
