@@ -89,8 +89,8 @@ module Profile
       config_path = File.join(Dir.home, ".gitconfig")
       if File.exist?(profiles) && !File.zero?(profiles)
         users = YAML.load(File.read(profiles))
-        user = users[:users].filter { |user| user[:username] == username }
-        if user
+        user = users[:users].filter { |user| user[:username] == username }        
+        unless user.empty?
           File.open(config_path, 'w') {|file| file.truncate(0) } if File.exist?(config_path)
           run("git config --global user.name #{user.first[:username]}")
           run("git config --global user.email #{user.first[:email]}")
